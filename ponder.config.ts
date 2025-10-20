@@ -1,16 +1,23 @@
 import { createConfig } from "ponder";
 
-import { UnverifiedContractAbi } from "./abis/UnverifiedContractAbi";
+import { AuctionAbi } from "./abis/AuctionAbi";
+
+console.log("RPC URL from env:", process.env.PONDER_RPC_URL_8453);
 
 export default createConfig({
+  database: {
+    kind: "postgres",
+    connectionString: process.env.DATABASE_URL,
+  },
   chains: {
-    basePreconf: { id: 8453, rpc: "http(process.env.PONDER_RPC_URL_8453)" },
+    base: { id: 8453, rpc: process.env.PONDER_RPC_URL_8453 },
   },
   contracts: {
-    UnverifiedContract: {
-      abi: UnverifiedContractAbi,
-      address: "0xfc52e33f48dd3fcd5ee428c160722efda645d74a",
-      chain: "basePreconf",
+    Auction: {
+      abi: AuctionAbi,
+      address: "0xFC52e33F48Dd3fcd5EE428c160722efda645D74A",
+      chain: "base",
+      startBlock: 33200648,
     },
   },
 });
