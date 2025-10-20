@@ -1,4 +1,5 @@
 import { ponder } from "ponder:registry";
+import { eq } from "ponder";
 import {
   auction,
   bid,
@@ -323,10 +324,13 @@ ponder.on("Auction:AuctionExtended", async ({ event, context }) => {
   const currentAuction = await context.db.find(auction, { id: castHash });
   if (!currentAuction) return;
 
-  // Count existing extensions - we'll use a simple approach for now
-  // In a real implementation, you'd need to track extension counts properly
-  // For now, we'll just use 0 as the extension index
-  let extensionIndex = 0;
+  // Count existing extensions to determine the next extension index
+  const existingExtensions = await context.db
+    .select()
+    .from(auctionExtension)
+    .where(eq(auctionExtension.castHash, castHash));
+  
+  const extensionIndex = existingExtensions.length;
 
   // Create extension record
   await context.db.insert(auctionExtension).values({
