@@ -3,6 +3,11 @@ import { createConfig } from "ponder";
 import { AuctionAbi } from "./abis/AuctionAbi";
 
 console.log("RPC URL from env:", process.env.PONDER_RPC_URL_8453);
+console.log("Neynar API Key available:", !!process.env.NEYNAR_API_KEY);
+console.log(
+  "BRNDBOT Signer UUID available:",
+  !!process.env.BRNDBOT_SIGNER_UUID
+);
 
 export default createConfig({
   database: {

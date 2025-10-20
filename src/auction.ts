@@ -202,6 +202,88 @@ ponder.on("Auction:BidPlaced", async ({ event, context }) => {
     totalVolume: amount,
     uniqueBidders: 1,
   });
+
+  // Check if this is a bid on a cast from @brnd or @brndbot
+  const brndbotFid = 1341847;
+  const brndFid = 1108951;
+
+  if ([brndFid, brndbotFid].includes(Number(currentAuction.creatorFid))) {
+    // Check if event happened within last 5 minutes
+    const currentTime = Date.now();
+    const eventTime = Number(block.timestamp) * 1000;
+    const timeDiff = currentTime - eventTime;
+    const fiveMinutesInMs = 5 * 60 * 1000;
+
+    if (timeDiff <= fiveMinutesInMs) {
+      try {
+        // Fetch bidder user data from Neynar API
+        const userUrl = `https://api.neynar.com/v2/farcaster/user/bulk/?fids=${bidderFid}`;
+        const userResponse = await fetch(userUrl, {
+          method: "GET",
+          headers: {
+            "x-api-key": process.env.NEYNAR_API_KEY!,
+          },
+        });
+
+        if (userResponse.ok) {
+          const userData = (await userResponse.json()) as any;
+          const bidderUser = userData.users?.[0];
+
+          if (bidderUser && bidderUser.username) {
+            // Determine the original cast author
+            const originalAuthor =
+              Number(currentAuction.creatorFid) === brndFid
+                ? "@brnd"
+                : "@brndbot";
+
+            // Create the bid cast text
+            const bidCastText = `@${bidderUser.username} just bid on this cast from ${originalAuthor}`;
+
+            // Publish the cast from brndbot
+            const castUrl = `https://api.neynar.com/v2/farcaster/cast`;
+            const castOptions = {
+              method: "POST",
+              headers: {
+                "x-api-key": process.env.NEYNAR_API_KEY!,
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify({
+                signer_uuid: process.env.BRNDBOT_SIGNER_UUID,
+                text: bidCastText,
+                embeds: [
+                  { url: `https://warpcast.com/~/conversations/${castHash}` },
+                ],
+              }),
+            };
+
+            const castResponse = await fetch(castUrl, castOptions);
+            if (castResponse.ok) {
+              const castData = await castResponse.json();
+              console.log("Successfully published bid cast:", castData);
+            } else {
+              console.error(
+                "Failed to publish bid cast:",
+                await castResponse.text()
+              );
+            }
+          } else {
+            console.log("Bidder user data not found or no username available");
+          }
+        } else {
+          console.error(
+            "Failed to fetch bidder user data:",
+            await userResponse.text()
+          );
+        }
+      } catch (error) {
+        console.error("Error in bid notification:", error);
+      }
+    } else {
+      console.log(
+        "Bid event too old (>5 minutes), skipping bid cast notification"
+      );
+    }
+  }
 });
 
 // Bid Refunded Event
@@ -293,6 +375,82 @@ ponder.on("Auction:AuctionSettled", async ({ event, context }) => {
 
   const brndbotFid = 1341847;
   const brndFid = 1108951;
+
+  if ([brndFid, brndbotFid].includes(Number(currentAuction.creatorFid))) {
+    // Check if event happened within last 5 minutes
+    const currentTime = Date.now();
+    const eventTime = Number(block.timestamp) * 1000;
+    const timeDiff = currentTime - eventTime;
+    const fiveMinutesInMs = 5 * 60 * 1000;
+
+    if (timeDiff <= fiveMinutesInMs) {
+      try {
+        // Fetch user data from Neynar API
+        const userUrl = `https://api.neynar.com/v2/farcaster/user/bulk/?fids=${winnerFid}`;
+        const userResponse = await fetch(userUrl, {
+          method: "GET",
+          headers: {
+            "x-api-key": process.env.NEYNAR_API_KEY!,
+          },
+        });
+
+        if (userResponse.ok) {
+          const userData = (await userResponse.json()) as any;
+          const winnerUser = userData.users?.[0];
+
+          if (winnerUser && winnerUser.username) {
+            // Determine the original cast author
+            const originalAuthor =
+              Number(currentAuction.creatorFid) === brndFid
+                ? "@brnd"
+                : "@brndbot";
+
+            // Create the cast text
+            const castText = `@${winnerUser.username} just collected this cast from ${originalAuthor}`;
+
+            // Publish the cast from brndbot
+            const castUrl = `https://api.neynar.com/v2/farcaster/cast`;
+            const castOptions = {
+              method: "POST",
+              headers: {
+                "x-api-key": process.env.NEYNAR_API_KEY!,
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify({
+                signer_uuid: process.env.BRNDBOT_SIGNER_UUID,
+                text: castText,
+                embeds: [
+                  { url: `https://warpcast.com/~/conversations/${castHash}` },
+                ],
+              }),
+            };
+
+            const castResponse = await fetch(castUrl, castOptions);
+            if (castResponse.ok) {
+              const castData = await castResponse.json();
+              console.log("Successfully published cast:", castData);
+            } else {
+              console.error(
+                "Failed to publish cast:",
+                await castResponse.text()
+              );
+            }
+          } else {
+            console.log("Winner user data not found or no username available");
+          }
+        } else {
+          console.error(
+            "Failed to fetch user data:",
+            await userResponse.text()
+          );
+        }
+      } catch (error) {
+        console.error("Error in cast collection notification:", error);
+      }
+    } else {
+      console.log("Event too old (>5 minutes), skipping cast notification");
+    }
+  }
   // Create cast collectible record
   await context.db.insert(castCollectible).values({
     id: castHash,
