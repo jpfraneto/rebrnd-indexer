@@ -1,20 +1,20 @@
 import { createConfig } from "ponder";
 
-import { ExampleContractAbi } from "./abis/ExampleContractAbi";
+import { StoriesInMotionV5Abi } from "./abis/StoriesInMotionV5Abi";
 
 export default createConfig({
   chains: {
-    mainnet: {
-      id: 1,
-      rpc: process.env.PONDER_RPC_URL_1!,
+    base: {
+      id: 8453,
+      rpc: process.env.PONDER_RPC_URL_8453!,
     },
   },
   contracts: {
-    ExampleContract: {
-      chain: "mainnet",
-      abi: ExampleContractAbi,
-      address: "0x0000000000000000000000000000000000000000",
-      startBlock: 1234567,
+    StoriesInMotionV5: {
+      chain: "base",
+      abi: StoriesInMotionV5Abi,
+      address: process.env.CONTRACT_ADDRESS!,
+      startBlock: parseInt(process.env.START_BLOCK || "0"),
     },
   },
 });
