@@ -1,4 +1,4 @@
-export const StoriesInMotionV5Abi = [
+export const StoriesInMotionV8Abi = [
   {
     inputs: [
       { internalType: "address", name: "_brndToken", type: "address" },

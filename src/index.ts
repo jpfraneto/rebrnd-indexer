@@ -13,23 +13,23 @@ import {
 const sendVoteToBackend = async (voteData: any) => {
   try {
     const apiKey = process.env.INDEXER_API_KEY;
+    const baseUrl =
+      process.env.BACKEND_API_BASE_URL || "https://poiesis.anky.app";
     if (!apiKey) {
       console.error("INDEXER_API_KEY not set - skipping vote submission");
       return;
     }
 
-    const response = await fetch(
-      "https://poiesis.anky.app/blockchain-service/submit-vote",
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${apiKey}`,
-          "X-Indexer-Source": "ponder-stories-in-motion-v5",
-        },
-        body: JSON.stringify(voteData),
-      }
-    );
+    const response = await fetch(`${baseUrl}/blockchain-service/submit-vote`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${apiKey}`,
+        "X-Indexer-Source":
+          process.env.INDEXER_SOURCE || "ponder-stories-in-motion-v8",
+      },
+      body: JSON.stringify(voteData),
+    });
 
     if (!response.ok) {
       console.error(
@@ -45,23 +45,24 @@ const sendVoteToBackend = async (voteData: any) => {
   }
 };
 
-const sendBrandToBackend = async (
-  brandData: any,
-  endpoint: string = "https://poiesis.anky.app/blockchain-service/brands"
-) => {
+const sendBrandToBackend = async (brandData: any, endpoint?: string) => {
   try {
     const apiKey = process.env.INDEXER_API_KEY;
+    const baseUrl =
+      process.env.BACKEND_API_BASE_URL || "https://poiesis.anky.app";
     if (!apiKey) {
       console.error("INDEXER_API_KEY not set - skipping brand submission");
       return;
     }
 
-    const response = await fetch(endpoint, {
+    const finalEndpoint = endpoint || `${baseUrl}/blockchain-service/brands`;
+    const response = await fetch(finalEndpoint, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
         Authorization: `Bearer ${apiKey}`,
-        "X-Indexer-Source": "ponder-stories-in-motion-v5",
+        "X-Indexer-Source":
+          process.env.INDEXER_SOURCE || "ponder-stories-in-motion-v8",
       },
       body: JSON.stringify(brandData),
     });
@@ -83,6 +84,8 @@ const sendBrandToBackend = async (
 const sendRewardClaimToBackend = async (rewardClaimData: any) => {
   try {
     const apiKey = process.env.INDEXER_API_KEY;
+    const baseUrl =
+      process.env.BACKEND_API_BASE_URL || "https://poiesis.anky.app";
     if (!apiKey) {
       console.error(
         "INDEXER_API_KEY not set - skipping reward claim submission"
@@ -91,13 +94,13 @@ const sendRewardClaimToBackend = async (rewardClaimData: any) => {
     }
 
     const response = await fetch(
-      "https://poiesis.anky.app/blockchain-service/submit-reward-claim",
+      `${baseUrl}/blockchain-service/submit-reward-claim`,
       {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${apiKey}`,
-          "X-Indexer-Source": "ponder-stories-in-motion-v5",
+          "X-Indexer-Source": "ponder-stories-in-motion-v8",
         },
         body: JSON.stringify(rewardClaimData),
       }
@@ -120,6 +123,8 @@ const sendRewardClaimToBackend = async (rewardClaimData: any) => {
 const sendUserLevelUpToBackend = async (userLevelUpData: any) => {
   try {
     const apiKey = process.env.INDEXER_API_KEY;
+    const baseUrl =
+      process.env.BACKEND_API_BASE_URL || "https://poiesis.anky.app";
     if (!apiKey) {
       console.error(
         "INDEXER_API_KEY not set - skipping user level-up submission"
@@ -128,13 +133,13 @@ const sendUserLevelUpToBackend = async (userLevelUpData: any) => {
     }
 
     const response = await fetch(
-      "https://poiesis.anky.app/blockchain-service/update-user-level",
+      `${baseUrl}/blockchain-service/update-user-level`,
       {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${apiKey}`,
-          "X-Indexer-Source": "ponder-stories-in-motion-v5",
+          "X-Indexer-Source": "ponder-stories-in-motion-v8",
         },
         body: JSON.stringify(userLevelUpData),
       }
@@ -234,14 +239,14 @@ ponder.on("StoriesInMotionV5:BrandCreated", async ({ event, context }) => {
     timestamp: block.timestamp.toString(),
   };
   console.log("a new brand was created", brandData);
-  //await sendBrandToBackend(brandData);
+  await sendBrandToBackend(brandData);
 });
 
 ponder.on("StoriesInMotionV5:BrandsCreated", async ({ event, context }) => {
   const { brandIds, handles, fids, walletAddresses, createdAt } = event.args;
   const { block, transaction } = event;
 
-  const brandsToInsert = brandIds.map((brandId, index) => ({
+  const brandsToInsert = brandIds.map((brandId: number, index: number) => ({
     id: Number(brandId),
     fid: Number(fids[index]),
     walletAddress: walletAddresses[index]!.toLowerCase(),
@@ -251,7 +256,7 @@ ponder.on("StoriesInMotionV5:BrandsCreated", async ({ event, context }) => {
     availableBrnd: 0n,
     createdAt,
     blockNumber: block.number,
-    transactionHash: transaction.hash,
+    transactionHash: transaction.hash as string,
   }));
 
   await context.db.insert(brands).values(brandsToInsert);

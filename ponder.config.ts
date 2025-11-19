@@ -1,6 +1,6 @@
 import { createConfig } from "ponder";
 
-import { StoriesInMotionV5Abi } from "./abis/StoriesInMotionV5Abi";
+import { StoriesInMotionV8Abi } from "./abis/StoriesInMotionV8Abi";
 
 export default createConfig({
   chains: {
@@ -12,8 +12,8 @@ export default createConfig({
   contracts: {
     StoriesInMotionV5: {
       chain: "base",
-      abi: StoriesInMotionV5Abi,
-      address: process.env.CONTRACT_ADDRESS!,
+      abi: StoriesInMotionV8Abi,
+      address: process.env.CONTRACT_ADDRESS as `0x${string}`,
       startBlock: parseInt(process.env.START_BLOCK || "0"),
     },
   },
