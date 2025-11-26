@@ -159,7 +159,7 @@ const sendUserLevelUpToBackend = async (userLevelUpData: any) => {
   }
 };
 
-ponder.on("StoriesInMotionV5:PodiumCreated", async ({ event, context }) => {
+ponder.on("BRNDSEASON1:PodiumCreated", async ({ event, context }) => {
   const { voter, fid, day, brandIds, cost } = event.args;
   const { block, transaction } = event;
 
@@ -211,7 +211,7 @@ ponder.on("StoriesInMotionV5:PodiumCreated", async ({ event, context }) => {
     }));
 });
 
-ponder.on("StoriesInMotionV5:BrandCreated", async ({ event, context }) => {
+ponder.on("BRNDSEASON1:BrandCreated", async ({ event, context }) => {
   const { brandId, handle, fid, walletAddress, createdAt } = event.args;
   const { block, transaction } = event;
 
@@ -242,7 +242,7 @@ ponder.on("StoriesInMotionV5:BrandCreated", async ({ event, context }) => {
   await sendBrandToBackend(brandData);
 });
 
-ponder.on("StoriesInMotionV5:BrandsCreated", async ({ event, context }) => {
+ponder.on("BRNDSEASON1:BrandsCreated", async ({ event, context }) => {
   const { brandIds, handles, fids, walletAddresses, createdAt } = event.args;
   const { block, transaction } = event;
 
@@ -278,7 +278,7 @@ ponder.on("StoriesInMotionV5:BrandsCreated", async ({ event, context }) => {
   }
 });
 
-ponder.on("StoriesInMotionV5:WalletAuthorized", async ({ event, context }) => {
+ponder.on("BRNDSEASON1:WalletAuthorized", async ({ event, context }) => {
   const { fid, wallet } = event.args;
   const { block, transaction } = event;
 
@@ -294,7 +294,7 @@ ponder.on("StoriesInMotionV5:WalletAuthorized", async ({ event, context }) => {
   });
 });
 
-ponder.on("StoriesInMotionV5:RewardClaimed", async ({ event, context }) => {
+ponder.on("BRNDSEASON1:RewardClaimed", async ({ event, context }) => {
   const { recipient, fid, amount, day, castHash, caller } = event.args;
   const { block, transaction } = event;
 
@@ -329,27 +329,24 @@ ponder.on("StoriesInMotionV5:RewardClaimed", async ({ event, context }) => {
   await sendRewardClaimToBackend(rewardClaimData);
 });
 
-ponder.on(
-  "StoriesInMotionV5:BrandRewardWithdrawn",
-  async ({ event, context }) => {
-    const { brandId, fid, amount } = event.args;
-    const { block, transaction } = event;
+ponder.on("BRNDSEASON1:BrandRewardWithdrawn", async ({ event, context }) => {
+  const { brandId, fid, amount } = event.args;
+  const { block, transaction } = event;
 
-    const withdrawalId = `${transaction.hash}-${event.log.logIndex}`;
+  const withdrawalId = `${transaction.hash}-${event.log.logIndex}`;
 
-    await context.db.insert(brandRewardWithdrawals).values({
-      id: withdrawalId,
-      brandId: Number(brandId),
-      fid: Number(fid),
-      amount,
-      blockNumber: block.number,
-      transactionHash: transaction.hash,
-      timestamp: block.timestamp,
-    });
-  }
-);
+  await context.db.insert(brandRewardWithdrawals).values({
+    id: withdrawalId,
+    brandId: Number(brandId),
+    fid: Number(fid),
+    amount,
+    blockNumber: block.number,
+    transactionHash: transaction.hash,
+    timestamp: block.timestamp,
+  });
+});
 
-ponder.on("StoriesInMotionV5:BrndPowerLevelUp", async ({ event, context }) => {
+ponder.on("BRNDSEASON1:BrndPowerLevelUp", async ({ event, context }) => {
   const { fid, newLevel, wallet } = event.args;
   const { block, transaction } = event;
 
@@ -393,7 +390,7 @@ ponder.on("StoriesInMotionV5:BrndPowerLevelUp", async ({ event, context }) => {
   await sendUserLevelUpToBackend(userLevelUpData);
 });
 
-ponder.on("StoriesInMotionV5:BrandUpdated", async ({ event, context }) => {
+ponder.on("BRNDSEASON1:BrandUpdated", async ({ event, context }) => {
   const { brandId, newMetadataHash, newFid, newWalletAddress } = event.args;
   const { block, transaction } = event;
 

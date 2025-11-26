@@ -1,4 +1,4 @@
-export const StoriesInMotionV8Abi = [
+export const BRNDSEASON1Abi = [
   {
     inputs: [
       { internalType: "address", name: "_brndToken", type: "address" },
@@ -34,6 +34,44 @@ export const StoriesInMotionV8Abi = [
     type: "error",
   },
   { inputs: [], name: "Unauthorized", type: "error" },
+  {
+    anonymous: false,
+    inputs: [
+      {
+        indexed: true,
+        internalType: "address",
+        name: "admin",
+        type: "address",
+      },
+      {
+        indexed: true,
+        internalType: "address",
+        name: "addedBy",
+        type: "address",
+      },
+    ],
+    name: "AdminAdded",
+    type: "event",
+  },
+  {
+    anonymous: false,
+    inputs: [
+      {
+        indexed: true,
+        internalType: "address",
+        name: "admin",
+        type: "address",
+      },
+      {
+        indexed: true,
+        internalType: "address",
+        name: "removedBy",
+        type: "address",
+      },
+    ],
+    name: "AdminRemoved",
+    type: "event",
+  },
   {
     anonymous: false,
     inputs: [
@@ -312,6 +350,13 @@ export const StoriesInMotionV8Abi = [
     type: "function",
   },
   {
+    inputs: [{ internalType: "address", name: "admin", type: "address" }],
+    name: "addAdmin",
+    outputs: [],
+    stateMutability: "nonpayable",
+    type: "function",
+  },
+  {
     inputs: [{ internalType: "address", name: "", type: "address" }],
     name: "authorizedFidOf",
     outputs: [{ internalType: "uint256", name: "", type: "uint256" }],
@@ -349,6 +394,13 @@ export const StoriesInMotionV8Abi = [
       { internalType: "string", name: "metadataHash", type: "string" },
       { internalType: "uint256", name: "createdAt", type: "uint256" },
     ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [{ internalType: "address", name: "account", type: "address" }],
+    name: "checkIsAdmin",
+    outputs: [{ internalType: "bool", name: "", type: "bool" }],
     stateMutability: "view",
     type: "function",
   },
@@ -434,7 +486,7 @@ export const StoriesInMotionV8Abi = [
           { internalType: "string", name: "metadataHash", type: "string" },
           { internalType: "uint256", name: "createdAt", type: "uint256" },
         ],
-        internalType: "struct StoriesInMotionV5.Brand",
+        internalType: "struct BRNDSeason1.Brand",
         name: "",
         type: "tuple",
       },
@@ -468,13 +520,6 @@ export const StoriesInMotionV8Abi = [
   },
   {
     inputs: [{ internalType: "uint256", name: "fid", type: "uint256" }],
-    name: "getUserBrndPowerLevel",
-    outputs: [{ internalType: "uint8", name: "", type: "uint8" }],
-    stateMutability: "view",
-    type: "function",
-  },
-  {
-    inputs: [{ internalType: "uint256", name: "fid", type: "uint256" }],
     name: "getUserInfo",
     outputs: [
       { internalType: "uint256", name: "userFid", type: "uint256" },
@@ -482,25 +527,6 @@ export const StoriesInMotionV8Abi = [
       { internalType: "uint32", name: "lastVoteDay", type: "uint32" },
       { internalType: "uint256", name: "totalVotes", type: "uint256" },
     ],
-    stateMutability: "view",
-    type: "function",
-  },
-  {
-    inputs: [{ internalType: "address", name: "wallet", type: "address" }],
-    name: "getUserInfoByWallet",
-    outputs: [
-      { internalType: "uint256", name: "fid", type: "uint256" },
-      { internalType: "uint8", name: "brndPowerLevel", type: "uint8" },
-      { internalType: "uint32", name: "lastVoteDay", type: "uint32" },
-      { internalType: "uint256", name: "totalVotes", type: "uint256" },
-    ],
-    stateMutability: "view",
-    type: "function",
-  },
-  {
-    inputs: [{ internalType: "uint256", name: "fid", type: "uint256" }],
-    name: "getUserTotalVotes",
-    outputs: [{ internalType: "uint256", name: "", type: "uint256" }],
     stateMutability: "view",
     type: "function",
   },
@@ -536,6 +562,13 @@ export const StoriesInMotionV8Abi = [
     type: "function",
   },
   {
+    inputs: [{ internalType: "address", name: "", type: "address" }],
+    name: "isAdmin",
+    outputs: [{ internalType: "bool", name: "", type: "bool" }],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
     inputs: [
       { internalType: "uint256", name: "fid", type: "uint256" },
       { internalType: "uint8", name: "newLevel", type: "uint8" },
@@ -553,6 +586,13 @@ export const StoriesInMotionV8Abi = [
     name: "owner",
     outputs: [{ internalType: "address", name: "", type: "address" }],
     stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [{ internalType: "address", name: "admin", type: "address" }],
+    name: "removeAdmin",
+    outputs: [],
+    stateMutability: "nonpayable",
     type: "function",
   },
   {
