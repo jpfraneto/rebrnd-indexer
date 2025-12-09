@@ -9,6 +9,11 @@ export default createConfig({
       rpc: process.env.PONDER_RPC_URL_8453!,
     },
   },
+
+  database: {
+    kind: "postgres",
+    connectionString: process.env.DATABASE_URL!,
+  },
   contracts: {
     BRNDSEASON1: {
       chain: "base",
