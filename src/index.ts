@@ -258,7 +258,6 @@ ponder.on("BRNDSEASON1:PodiumCreated", async ({ event, context }) => {
       transactionHash: transaction.hash,
     }));
 
-  // Award 3 points for voting
   await updateUserPoints(context, Number(fid), 3n, block, transaction);
 
   // Award points to brands based on their position in the podium
